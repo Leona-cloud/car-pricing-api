@@ -1,11 +1,32 @@
 ###Create New User
+POST http://localhost:3000/auth/signup
+Content-Type: application/json
+
+{
+    "email": "okafor2@gmail.com",
+    "password": "12345"
+}
+
+
+###Sign in
 POST http://localhost:3000/auth/signin
 Content-Type: application/json
 
 {
-    "email": "okafor@gmail.com",
-    "password": "udjkshkakd"
+    "email": "okafor2@gmail.com",
+    "password": "12345"
 }
+
+
+### sign user out
+
+POST  http://localhost:3000/auth/signout
+
+
+###get currently signed in user
+
+GET http://localhost:3000/auth/whoami
+
 
 ###find a particular user with given id
 GET http://localhost:3000/auth/4
@@ -14,7 +35,7 @@ GET http://localhost:3000/auth/4
 GET http://localhost:3000/auth?email=abcd@gmail.com
 
 ### delete a user
-DELETE  http://localhost:3000/auth/0
+DELETE  http://localhost:3000/auth/9
 
 ### update a user
 PATCH http://localhost:3000/auth/9
