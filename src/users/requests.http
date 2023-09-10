@@ -13,7 +13,7 @@ POST http://localhost:3000/auth/signin
 Content-Type: application/json
 
 {
-    "email": "okafor2@gmail.com",
+    "email": "oauife@gmail.com",
     "password": "12345"
 }
 
@@ -29,7 +29,7 @@ GET http://localhost:3000/auth/whoami
 
 
 ###find a particular user with given id
-GET http://localhost:3000/auth/4
+GET http://localhost:3000/auth/9
 
 ### find users's with a given email
 GET http://localhost:3000/auth?email=abcd@gmail.com
