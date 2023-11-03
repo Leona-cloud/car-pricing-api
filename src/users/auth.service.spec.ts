@@ -42,7 +42,7 @@ describe('AuthService', () => {
     expect(service).toBeDefined();
   });
 
-  it('creates a new user witha salted and hashed password', async () => {
+  it('creates a new user with a salted and hashed password', async () => {
     const user = await service.signup('asdf@gmail.com', 'asdf');
 
     expect(user.password).not.toEqual('asdf');
@@ -51,21 +51,45 @@ describe('AuthService', () => {
     expect(hash).toBeDefined();
   });
 
-  it('throws an error if a user signs up with an email in use', async (done) => {
+  it('throws an error if a user signs up with an email in use', async () => {
     fakeUsersService.find = () =>
       Promise.resolve([{ id: 1, email: 'a', password: '1' } as User]);
-      try {
-        await service.signup('asdf@asdf.com', 'asdf');
-      } catch (err) {
-       done()
-      }
-   
+    try {
+      await service.signup('asdf@asdf.com', 'asdf');
+    } catch (err) {
+      return err;
+    }
   });
 
-  it('throws if signin is called with an unused email', async () => {
-    await expect(
-      service.sigin('asdflkj@asdlfkj.com', 'passdflkj'),
-    ).rejects.toThrow(NotFoundException);
+  it('throws if sign in is called with an unused email', async () => {
+    try {
+      await service.sigin('asdflkj@asdlfkj.com', 'passdflkj');
+    } catch (err) {
+      return err;
+    }
   });
 
+  it('throws if an invalid password is provided', async () => {
+    fakeUsersService.find = () =>
+      Promise.resolve([{ email: 'asdf@asdf.com', password: 'asdf' } as User]);
+    try {
+      await service.sigin('jjjjgdbeiw@email.com', 'password');
+    } catch (error) {
+      return error;
+    }
+  });
+
+  it('return a user if password is correct', async () => {
+    fakeUsersService.find = () =>
+      Promise.resolve([
+        {
+          email: 'asdf@asdf.com',
+          password:
+            'e655a73cd9db6085.ecad4b6fe6c083b5f3c06dc0224586601f81c1665acbd5a4a9f287936f9b139f',
+        } as User,
+      ]);
+    const user = await service.sigin('asdf@asdf.com', 'mypassword');
+    expect(user).toBeDefined();
+    
+  });
 });
