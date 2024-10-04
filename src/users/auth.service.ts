@@ -6,6 +6,7 @@ import {
 import { UsersService } from './users.service';
 import { randomBytes, scrypt as _scrypt } from 'crypto';
 import { promisify } from 'util';
+import { User } from './user.entity';
 
 const scrypt = promisify(_scrypt);
 
@@ -13,27 +14,30 @@ const scrypt = promisify(_scrypt);
 export class AuthService {
   constructor(private readonly usersService: UsersService) {}
 
-  async signup(email: string, password: string) {
-    // check if email already exists
+  async signup(email: string, password: string): Promise<User> {
+    // Check if email already exists
     const users = await this.usersService.find(email);
     if (users.length) {
-      throw new BadRequestException('email already in use');
+      throw new BadRequestException('Email already in use');
     }
-    // hash password
+
     const salt = randomBytes(8).toString('hex');
     const hash = (await scrypt(password, salt, 32)) as Buffer;
-    const result = salt + '.' + hash.toString('hex');
+    const hashedPassword = `${salt}.${hash.toString('hex')}`;
 
-    //create new user and save
-    const user = await this.usersService.create(email, result);
-    // return user
+    const user = await this.usersService.create(email, hashedPassword);
+
     return user;
   }
 
   async sigin(email: string, password: string) {
-    const [user] = await this.usersService.find(email);
+    const user = await this.usersService.findByEmail(email);
+
     if (!user) {
       throw new NotFoundException('user not found');
+    }
+    if (!user.password) {
+      throw new BadRequestException('Password not found for the user');
     }
 
     const [salt, storedHash] = user.password.split('.');
